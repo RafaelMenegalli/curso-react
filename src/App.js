@@ -1,61 +1,51 @@
-import { useState } from "react";
-
-// import ShowName from "./components/ShowName";
+import { useEffect, useState } from "react";
+import { TextField, Button } from "@mui/material";
 
 function App() {
+  const [input, setInput] = useState("");
+  const [tasks, setTasks] = useState(() => {
+    const storageTasks = localStorage.getItem("@tasks");
+    return storageTasks ? JSON.parse(storageTasks) : [];
+  });
 
-  const [name, setName] = useState("")
-  const [age, setAge] = useState("")
-  const [email, setEmail] = useState("")
+  useEffect(() => {
+    localStorage.setItem("@tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
-  const [users, setUsers] = useState([])
+  function handleFormRegister(event) {
+    event.preventDefault();
 
-  function handleFormSubmit(event) {
-    event.preventDefault()
-
-    const data = {
-      nome: name,
-      idade: age,
-      email: email
+    if (input.trim()) {
+      setTasks([...tasks, input]);
+      setInput("");
     }
-
-    const teste = [...users, data]
-
-
-
-    setUsers(teste)
-
-    setName("")
-    setAge("")
-    setEmail("")
   }
 
   return (
     <div>
-      <form onSubmit={handleFormSubmit}>
-        <label>Nome:</label>
-        <input placeholder="Digite seu nome aqui..." value={name} onChange={(e) => setName(e.target.value)} /> <br />
+      <h1>Cadastro de tarefas</h1>
 
-        <label>Idade:</label>
-        <input placeholder="Digite sua idade aqui..." value={age} onChange={(e) => setAge(e.target.value)} /> <br />
+      <form onSubmit={handleFormRegister}>
+        <TextField
+          label="Digite uma tarefa..."
+          variant="standard"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+        />
 
-        <label>Email:</label>
-        <input placeholder="Digite seu email aqui..." value={email} onChange={(e) => setEmail(e.target.value)} /> <br /> <br />
+        <br />
+        <br />
 
-        <button type="submit" >Registrar</button>
+        <Button size="small" variant="contained" type="submit">
+          Cadastrar Tarefa
+        </Button>
       </form>
 
-      <br />
-      <br />
-
-      {users.map((item, index) => (
-        <div key={index}>
-          <span>Nome: {item.nome}</span> <br/>
-          <span>Idade: {item.idade}</span> <br/>
-          <span>Email: {item.email}</span> <br/>
-          <span>------------------------------------------------</span>
-        </div>
-      ))}
+      <ul>
+        {tasks.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
     </div>
   );
 }
